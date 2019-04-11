@@ -5,6 +5,7 @@ import datetime as dt
 import time, json, string, cgi, subprocess, json
 import settings as settings
 import Adafruit_DHT
+mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 
 # Raspberry Pi with DHT sensor - connected to GPIO16 / Pin 36
 sensor = Adafruit_DHT.DHT22
@@ -30,7 +31,14 @@ def showHourlyColorCodes(hourlyConditions):
 
 # begin the loop to get the current weather for display
 while True:
-    #try:    
+
+    try:    
+        # make sure there's no other process using the screen by checking the memcache semaphore variable
+        displayInUse = mc.get("INUSE")
+        if displayInUse:
+            continue
+        mc.set("INUSE", True)
+    
         # get current date and time
         date=dt.datetime.now()
 
@@ -104,20 +112,13 @@ while True:
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "250"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "190", "230", "IN: " + str(insideTemperature) + "* F [" + str(insideHumidity) + " %]"])
 
-        # show driving time
-        subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "189"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "200", "Driving"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "40", "230", "1h 32m"])
+        # turn off the in use flag for the screen, we're done writing to it
+        mc.set("INUSE", False)
 
-        # show idle time
-        subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "245"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "200", "Idle"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "40", "230", "1h 32m"])
-
-        exit()
         # wait 1 minute
-        #time.sleep(60)
+        time.sleep(60)
 
-    #except (Exception):
-        # Network or other issue, wait 5 minutes
-    #    time.sleep(300)
+    except (Exception):
+        # Network or other issue, wait 1 minute
+        mc.set("INUSE", False)
+        time.sleep(60)
