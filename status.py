@@ -7,35 +7,51 @@ import datetime as dt
 import includes.data as data
 from gpiozero import Button
 from datetime import datetime
-mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+mc = memcache.Client(["127.0.0.1:11211"], debug=0)
 
 # begin the loop to get the current status to show on the display
+mc.set("INUSE", "")
 while True:
 
 #try:
-        # make sure there's no other process using the screen by checking the memcache semaphore variable
+        # make sure there"s no other process using the screen by checking the memcache semaphore variable
         displayInUse = mc.get("INUSE")
-        if displayInUse:
+        if displayInUse == "INUSE":
+            time.sleep(1)
             continue
-        mc.set("INUSE", True)
+        mc.set("INUSE", "INUSE")
     
         # get current date and time
-        now = dt.datetime.now()
-        timestamp = datetime.timestamp(now)
+        timestamp = time.time()
 
-        # show how long we've been idle or driving for        
+        # show how long we"ve been idle or driving for        
         tripStatus = mc.get("TRIPBUTTON")
+        print "Trip Status" + tripStatus
 
         # toggle trip status accordingly
         if tripStatus == "DRIVING":
-            data.saveJSONToFile('driving.json', 'IDLE')
+            data.saveJSONToFile("driving.json", "IDLE")
         if tripStatus == "IDLE":
-            data.saveJSONToFile('driving.json', 'DRIVING')
+            data.saveJSONToFile("driving.json", "DRIVING")
         mc.set("TRIPBUTTON", str(""))
 
-        drivingStatus = getJSONFromFile('driving.json')
-        lastUpdate = data.getModificationDate('driving.json')
-        lastUpdateReadable = data.displayHumanReadableTime((timestamp-lastUpdate))
+
+
+
+
+        drivingStatus = data.getJSONFromFile("driving.json")
+        lastUpdate = data.getModificationDate("driving.json")
+        
+        print timestamp
+        print drivingStatus
+        print lastUpdate
+        
+        lastUpdateReadable = data.displayHumanReadableTime((int(timestamp)-int(lastUpdate)))
+        
+        print drivingStatus
+        print lastUpdate
+        print lastUpdateReadable
+        
 
         # show driving time
         if drivingStatus == "DRIVING":    
@@ -49,14 +65,14 @@ while True:
             subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "200", "Idle"])
             subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "40", "230", str(lastUpdateReadable)])
 
-        # turn off the in use flag for the screen, we're done writing to it
-        mc.set("INUSE", False)
+        # turn off the in use flag for the screen, we"re done writing to it
+        mc.set("INUSE", "")
 
         # wait 1 second
-        #time.sleep(1)
+        time.sleep(1)
 
     #except (Exception):
     
         # Network or other issue, wait 1 second
-        # mc.set("INUSE", False)
+        # mc.set("INUSE", "")
         #    time.sleep(1)

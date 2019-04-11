@@ -32,6 +32,5 @@ def displayHumanReadableTime(seconds, granularity=3):
 
 def getModificationDate(filename):
     """get last modification date for file"""
-    timeInfo = os.path.getmtime('/home/pi/CarTripComputer/data/' + filename)
-    return datetime.datetime.fromtimestamp(timeInfo)
+    return os.path.getmtime('/home/pi/CarTripComputer/data/' + filename)
     

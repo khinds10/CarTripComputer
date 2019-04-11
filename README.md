@@ -3,6 +3,10 @@ On / Off Car Trip Timer with upcoming weather and internal car conditions monito
 
 >$ `sudo apt-get install memcached vim git python-smbus i2c-tools python-imaging python-smbus build-essential python-dev rpi.gpio python3 python3-pip python-memcache`
 
+sudo apt-get install vim git python-smbus i2c-tools python-imaging python-smbus build-essential python-dev rpi.gpio python3 python3-pip python-gpiozero python-psutil
+
+gpiozero
+
 **DHT11 Install**
 
 >$ `cd ~`
