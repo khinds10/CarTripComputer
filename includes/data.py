@@ -7,7 +7,7 @@ import time, json, string, cgi, subprocess, os, datetime
 def getJSONFromFile(fileName):
     """get JSON contents from file in question"""
     try:
-        with open('/home/pi/CarTripComputer/data/' + filename) as dataFile:    
+        with open('/home/pi/CarTripComputer/data/' + fileName) as dataFile:    
             return json.load(dataFile)
     except (Exception):
         return ""

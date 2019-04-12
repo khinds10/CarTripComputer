@@ -12,49 +12,32 @@ mc = memcache.Client(["127.0.0.1:11211"], debug=0)
 # begin the loop to get the current status to show on the display
 mc.set("INUSE", "")
 while True:
-
-#try:
+    try:
         # make sure there"s no other process using the screen by checking the memcache semaphore variable
         displayInUse = mc.get("INUSE")
         if displayInUse == "INUSE":
+            print "display in use"
             time.sleep(1)
             continue
         mc.set("INUSE", "INUSE")
     
         # get current date and time
         timestamp = time.time()
-
-        # show how long we"ve been idle or driving for        
-        tripStatus = mc.get("TRIPBUTTON")
-        print "Trip Status" + tripStatus
-
-        # toggle trip status accordingly
-        if tripStatus == "DRIVING":
-            data.saveJSONToFile("driving.json", "IDLE")
-        if tripStatus == "IDLE":
-            data.saveJSONToFile("driving.json", "DRIVING")
-        mc.set("TRIPBUTTON", str(""))
-
-
-
-
-
         drivingStatus = data.getJSONFromFile("driving.json")
         lastUpdate = data.getModificationDate("driving.json")
-        
-        print timestamp
-        print drivingStatus
-        print lastUpdate
-        
         lastUpdateReadable = data.displayHumanReadableTime((int(timestamp)-int(lastUpdate)))
         
-        print drivingStatus
-        print lastUpdate
-        print lastUpdateReadable
+        if lastUpdateReadable == "":
+            lastUpdateReadable = "0m"
         
-
+        # clear previous entry
+        subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "51"])        
+        subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "0"])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "200", "XXXXX"])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "40", "230", "XXXXX"])
+        
         # show driving time
-        if drivingStatus == "DRIVING":    
+        if drivingStatus == "DRIVING":
             subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "189"])
             subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "200", "Driving"])
             subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "40", "230", str(lastUpdateReadable)])
@@ -69,10 +52,9 @@ while True:
         mc.set("INUSE", "")
 
         # wait 1 second
-        time.sleep(1)
+        time.sleep(10)
 
-    #except (Exception):
-    
+    except (Exception):
         # Network or other issue, wait 1 second
-        # mc.set("INUSE", "")
-        #    time.sleep(1)
+        mc.set("INUSE", "")
+        time.sleep(10)

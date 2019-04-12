@@ -37,12 +37,14 @@ while True:
         # make sure there"s no other process using the screen by checking the memcache semaphore variable
         displayInUse = mc.get("INUSE")
         if displayInUse == "INUSE":
+            print "display in use"
             time.sleep(1)
             continue
         mc.set("INUSE", "INUSE")
     
         # get current date and time
-        date=dt.datetime.now()
+        date = dt.datetime.now()
+        clockValue = date.strftime("%I:%M%p")
 
         # get 10 readings and average, in case the humidistat is inaccurate
         count, readingCount, avgTemperature, avgHumidity = [ 0, 0, 0, 0 ]
@@ -77,7 +79,7 @@ while True:
         # hourly conditions, limit the characters to 30 in the summary
         hourlyConditions = weatherInfo["hourly"]
         hourlySummary = str(hourlyConditions["summary"])
-        hourlySummary = (hourlySummary[:67] + "...") if len(hourlySummary) > 69 else hourlySummary
+        hourlySummary = (hourlySummary[:37] + "...") if len(hourlySummary) > 39 else hourlySummary
 
         # conditions for the day
         dailyConditions = weatherInfo["daily"]
@@ -92,7 +94,7 @@ while True:
         subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "18"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "255"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "95", summary])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "40", "155", hourlySummary])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "155", hourlySummary])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "18"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "80", "20", date.strftime("%a, %b %d")])
         
@@ -107,10 +109,16 @@ while True:
             subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "240"])
             subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "90", "45", "HIGH\n" + apparentTemperatureMax + "*F"])
         
-        # show indoor / outdoor temp
+        # show outdoor temp
         subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "51"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "255"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "240", "40", apparentTemperature + "*F [" + humidity + "%]"])
+        
+        # show clock value
+        subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "253"])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "250", "80", str(clockValue)])
+        
+        # show indoor temp
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "250"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "190", "230", "IN: " + str(insideTemperature) + "* F [" + str(insideHumidity) + " %]"])
 
