@@ -21,5 +21,8 @@ def buttonPress():
         data.saveJSONToFile("driving.json", "DRIVING")
 
 while True:
-    tripButton.when_pressed = buttonPress
-    time.sleep(0.1)
+    try:
+        tripButton.when_pressed = buttonPress
+        time.sleep(0.1)
+    except (Exception):
+        time.sleep(1)
