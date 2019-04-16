@@ -89,7 +89,7 @@ while True:
         
         # clear and setup display to show basic info
         subprocess.call(["/home/pi/CarTripComputer/digole", "clear"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "setRot90"])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "setRot270"])
         subprocess.call(["/home/pi/CarTripComputer/digole", icon])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "18"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "255"])
