@@ -26,7 +26,7 @@ def showHourlyColorCodes(hourlyConditions):
             subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "7"])
         if hourlyMeasurement["icon"] == "snow":
             subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "7"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "drawBox", str(currentStep), "110", "20", "20"])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "drawBox", str(currentStep), "120", "20", "20"])
         currentStep = currentStep + stepCount
 
 # begin the loop to get the current weather for display
@@ -94,7 +94,7 @@ while True:
         subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "18"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "255"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "95", summary])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "155", hourlySummary])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "10", "165", hourlySummary])
         subprocess.call(["/home/pi/CarTripComputer/digole", "setFont", "18"])
         subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "80", "20", date.strftime("%a, %b %d")])
         
@@ -116,7 +116,7 @@ while True:
         
         # show clock value
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "253"])
-        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "250", "80", str(clockValue)])
+        subprocess.call(["/home/pi/CarTripComputer/digole", "printxy_abs", "250", "75", str(clockValue)])
         
         # show indoor temp
         subprocess.call(["/home/pi/CarTripComputer/digole", "setColor", "250"])
